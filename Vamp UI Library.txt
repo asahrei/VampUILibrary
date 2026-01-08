@@ -32,7 +32,7 @@ Tab = Color3.fromRGB(40, 40, 40),
 Element = Color3.fromRGB(15, 15, 15),
 ElementBorder = Color3.fromRGB(164, 30, 20),
 InElementBorder = Color3.fromRGB(164, 30, 20),
-ElementTransparency = 0.95,
+ElementTransparency = 0,
 ToggleSlider = Color3.fromRGB(164, 30, 20),
 ToggleToggled = Color3.fromRGB(164, 30, 20),
 SliderRail = Color3.fromRGB(164, 30, 20),
@@ -7478,3 +7478,4 @@ end
 end)
 if RunService:IsStudio() then task.wait(0.01) end
 return Library, SaveManager, InterfaceManager, Mobile
+
