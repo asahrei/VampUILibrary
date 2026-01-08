@@ -6978,10 +6978,9 @@ Description = "Changes the interface theme.",
 Values = Library.Themes,
 Default = self.Library.Theme,
 Callback = function(Value)
-function Library:SetTheme(Value)
-    Library.Theme = "Vamp"
-    Creator.Theme = "Vamp"
-    Creator.UpdateTheme()
+Library:SetTheme(Value)
+Settings.Theme = Value
+InterfaceManager:SaveSettings()
 end
 })
 InterfaceTheme:SetValue(Settings.Theme)
@@ -7243,8 +7242,11 @@ Library.GUI:Destroy()
 end
 end
 function Library:ToggleAcrylic(Value)
-    Library.Acrylic = false
-    Library.UseAcrylic = false
+if Library.Window then
+if Library.UseAcrylic then
+Library.Acrylic = Value
+if Library.Window.AcrylicPaint and Library.Window.AcrylicPaint.Model then
+Library.Window.AcrylicPaint.Model.Transparency = Value and 0.95 or 1
 end
 end
 end
@@ -7255,10 +7257,36 @@ Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value and 
 end
 end
 function Library:SetWindowTransparency(Value)
-function Library:SetWindowTransparency(Value)
-    if Library.WindowFrame then
-        Library.WindowFrame.BackgroundTransparency = 0
-    end
+if Library.Window and Library.UseAcrylic then
+Value = math.clamp(Value, 0, 3)
+if Library.Theme == "Glass" then
+local glassTransparency = 0.8 + (Value * 0.05)
+if Value > 1 then
+glassTransparency = 0.85 + ((Value - 1) * 0.04)
+end
+if Value > 2 then
+glassTransparency = 0.93 + ((Value - 2) * 0.04)
+end
+Library.Window.AcrylicPaint.Model.Transparency = math.min(glassTransparency, 0.99)
+local backgroundTransparency = 0.7 + (Value * 0.08)
+if Value > 1 then
+backgroundTransparency = 0.78 + ((Value - 1) * 0.07)
+end
+if Value > 2 then
+backgroundTransparency = 0.85 + ((Value - 2) * 0.1)
+end
+Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = math.min(backgroundTransparency, 0.99)
+Library.NotificationTransparency = Value
+for _, notification in pairs(Library.ActiveNotifications or {}) do
+if notification and notification.ApplyTransparency then
+notification:ApplyTransparency()
+end
+end
+else
+Library.Window.AcrylicPaint.Model.Transparency = 0.98
+Library.Window.AcrylicPaint.Frame.Background.BackgroundTransparency = Value * 0.3
+end
+end
 end
 function Library:Notify(Config)
 return NotificationModule:New(Config)
